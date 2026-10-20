@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>개념 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#F1FAF5; --ink:#344A3F; --main:#5DB98A; --ok:#3FAE6F; --no:#E46A6A; --line:#D4ECDF; }
+  *{box-sizing:border-box}
+  /* 예쁜 스크롤 막대 */
+  ::-webkit-scrollbar{width:12px;height:12px}
+  ::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}
+  ::-webkit-scrollbar-button{display:none;width:0;height:0}
+  ::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--main) 45%,#fff);border:3px solid transparent;border-radius:99px;background-clip:padding-box}
+  ::-webkit-scrollbar-thumb:hover{background-color:color-mix(in srgb,var(--main) 75%,#fff)}
+  @supports not selector(::-webkit-scrollbar){ *{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--main) 45%,#fff) transparent} }
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Gowun Dodum',sans-serif;display:flex;justify-content:center;padding:24px 16px}
+  .wrap{width:100%;max-width:720px}
+  .std{display:inline-block;background:#fff;border:2px solid var(--line);border-radius:999px;padding:3px 14px;font-size:14px}
+  h1{text-align:center;font-size:clamp(26px,4.5vw,40px);margin:10px 0}
+  .bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden;margin:12px 0 20px}
+  .bar i{display:block;height:100%;background:var(--main);transition:width .3s}
+  .card{background:#fff;border:2px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 8px 24px rgba(93,185,138,.15)}
+  .num{color:var(--main);font-weight:700}
+  .q{font-size:clamp(21px,3.3vw,28px);margin:6px 0 18px;line-height:1.45}
+  .opts{display:grid;gap:10px}
+  .opt{font:inherit;font-size:20px;text-align:left;background:#fff;border:2px solid var(--line);border-radius:16px;padding:14px 18px;cursor:pointer;transition:.15s}
+  .opt:hover:not(:disabled){border-color:var(--main);background:#F6FCF9}
+  .opt.right{border-color:var(--ok);background:#E5F6EC}
+  .opt.wrong{border-color:var(--no);background:#FDECEC}
+  .opt:disabled{cursor:default}
+  .fb{margin-top:16px;padding:14px 18px;border-radius:16px;font-size:18px}
+  .fb.ok{background:#E5F6EC} .fb.no{background:#FDECEC}
+  .next{display:block;margin:18px auto 0;font:inherit;font-size:20px;border:0;border-radius:999px;background:var(--main);color:#fff;padding:12px 40px;cursor:pointer}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:20px}
+  .nav .prev,.nav .go{font:inherit;font-size:18px;border-radius:999px;padding:10px 22px;cursor:pointer;white-space:nowrap}
+  .nav .prev{background:#fff;border:2px solid var(--line);color:var(--ink)}
+  .nav .prev:disabled{opacity:.35;cursor:default}
+  .nav .go{border:0;background:var(--main);color:#fff}
+  .dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  .dot{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);background:#fff;font:inherit;font-size:15px;cursor:pointer;padding:0}
+  .dot.done{background:#E5F6EC;border-color:var(--main)}
+  .dot.now{background:var(--main);border-color:var(--main);color:#fff}
+  @media (max-width:520px){ .nav{flex-wrap:wrap} .dots{order:-1;width:100%} .nav .prev,.nav .go{flex:1} }
+  .score{text-align:center;font-size:72px;margin:10px 0;color:var(--main)}
+  .wrongs div{background:#FDF5F5;border-radius:14px;padding:12px 16px;margin:8px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="std" id="std"></span>
+  <h1 id="title">✅ 개념 퀴즈</h1>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="card" id="card"></div>
+</div>
+
+<script>
+  /* ===== ✏️ 문제는 pairs([개념, 뜻])로 저절로 만들어져요 =====
+     문제를 직접 더 넣고 싶으면 아래 EXTRA에 { q: "문제", options: ["보기1","보기2","보기3","보기4"], answer: 정답번호(0부터), explain: "해설" } 를 넣어요. */
+  const DATA = /*DATA*/{"code":"9도01-01","t":"도덕적인 삶과 자아","text":"자신의 삶과 가치관에 대한 성찰을 통해 자아를 올바로 이해하고, 삶에서 도덕이 필요한 이유에 근거하여 도덕적인 삶에 대한 의지를 기른다.","q":"나는 어떤 사람이 되고 싶나요? 그러려면 어떤 노력이 필요할까요?","pairs":[["자아","나 자신에 대한 이해와 느낌"],["가치관","무엇이 중요하고 옳은지 판단하는 나만의 기준"],["성찰","자신의 생각과 행동을 돌아보고 살피는 것"],["도덕","사람이 마땅히 지켜야 할 도리와 규범"]],"video":"도덕이 필요한 이유","news":["청소년 가치관","도덕적 삶","청소년 자존감","선행 미담"],"make":"나를 소개하는 가치관 명함","grade":"중학교"}/*END*/;
+  const EXTRA = [];
+
+  const $ = id => document.getElementById(id);
+  const safe = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  document.title = "개념 퀴즈 · " + DATA.t;
+  $("std").textContent = `✅ [${DATA.code}] ${DATA.t}`;
+  $("std").title = DATA.text;
+  $("title").textContent = `✅ '${DATA.t}' 개념 퀴즈`;
+
+  function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  // 뜻을 보여 주고 알맞은 개념을 고르는 문제
+  function makeQuestions() {
+    const terms = DATA.pairs.map(p => p[0]);
+    return shuffle(DATA.pairs.map(([term, mean]) => {
+      const options = shuffle(terms.slice());
+      return { term, q: `"${mean}"<br>이 뜻에 알맞은 개념은?`, options, answer: options.indexOf(term), explain: `<b>${safe(term)}</b>: ${safe(mean)}` };
+    })).concat(EXTRA);
+  }
+
+  const card = $("card");
+  // picks[문제 번호] = 고른 보기 번호 (안 풀었으면 비어 있어요)
+  let Q = [], i = 0, picks = [];
+
+  function show() {
+    const it = Q[i], k = picks[i], done = k !== undefined;
+    const solved = picks.filter(x => x !== undefined).length;
+    $("bar").style.width = (solved / Q.length * 100) + "%";
+    card.innerHTML = `<div class="num">${i + 1} / ${Q.length}</div><p class="q">${it.q}</p>
+      <div class="opts">${it.options.map((o, n) => `<button class="opt ${done && n === it.answer ? "right" : ""} ${done && n === k && k !== it.answer ? "wrong" : ""}" data-k="${n}" ${done ? "disabled" : ""}>${n + 1}. ${safe(o)}</button>`).join("")}</div>
+      ${done ? `<div class="fb ${k === it.answer ? "ok" : "no"}"><b>${k === it.answer ? "🎉 맞았어요!" : "🤔 아쉬워요!"}</b><br>${it.explain}</div>` : ""}
+      <div class="nav">
+        <button class="prev" id="prev" ${i === 0 ? "disabled" : ""}>← 이전 문제</button>
+        <span class="dots">${Q.map((_, n) => `<button class="dot ${n === i ? "now" : ""} ${picks[n] !== undefined ? "done" : ""}" data-go="${n}" aria-label="${n + 1}번 문제">${n + 1}</button>`).join("")}</span>
+        ${i < Q.length - 1 ? `<button class="go" id="next">다음 문제 →</button>` : `<button class="go" id="next">결과 보기</button>`}
+      </div>`;
+    card.querySelectorAll(".opt").forEach(b => b.onclick = () => { picks[i] = +b.dataset.k; show(); $("next").focus(); });
+    card.querySelectorAll(".dot").forEach(b => b.onclick = () => { i = +b.dataset.go; show(); });
+    $("prev").onclick = () => { if (i > 0) { i--; show(); } };
+    $("next").onclick = () => {
+      if (i < Q.length - 1) { i++; show(); return; }
+      const left = Q.length - solved;
+      if (left && !confirm(`아직 안 푼 문제가 ${left}개 있어요. 그래도 결과를 볼까요?`)) return;
+      finish();
+    };
+  }
+  function finish() {
+    $("bar").style.width = "100%";
+    const score = Q.filter((it, n) => picks[n] === it.answer).length;
+    const wrongs = Q.filter((it, n) => picks[n] !== it.answer);
+    const msg = score === Q.length ? "완벽해요! 👏" : score >= Q.length * 0.6 ? "잘했어요! 틀린 것만 다시 봐요." : "다시 한 번 정리해 봐요. 할 수 있어요!";
+    // 결과를 이 기기에 남겨요 (🔐 관리자 대시보드에서 봐요)
+    try {
+      const list = JSON.parse(localStorage.getItem(ADMIN.key) || "[]");
+      list.push({ score: `${score} / ${Q.length}`, wrong: wrongs.map(w => w.term || w.q.replace(/<[^>]+>/g, " ")), at: Date.now() });
+      localStorage.setItem(ADMIN.key, JSON.stringify(list));
+    } catch (e) {}
+    card.innerHTML = `<p style="text-align:center;margin:0">나의 점수</p><div class="score">${score} / ${Q.length}</div>
+      <p style="text-align:center;font-size:20px">${msg}</p>
+      ${wrongs.length ? `<div class="wrongs"><b>📌 틀리거나 안 푼 문제 다시 보기</b>${wrongs.map(w => `<div>${w.explain}</div>`).join("")}</div>` : ""}
+      <button class="next" id="again">다시 풀기</button>`;
+    $("again").onclick = begin;
+  }
+  function begin() { Q = makeQuestions(); i = 0; picks = []; show(); }
+  // 키보드 ← → 로도 넘겨요
+  document.addEventListener("keydown", e => {
+    if (!$("prev") || e.target.matches("input,textarea")) return;
+    if (e.key === "ArrowLeft") $("prev").click();
+    if (e.key === "ArrowRight" && i < Q.length - 1) $("next").click();
+  });
+  // 🔐 관리자 대시보드에 보일 기록
+  const ADMIN = { key: "quiz.results." + DATA.code, title: "개념 퀴즈",
+    cols: [["score", "점수"], ["wrong", "틀리거나 안 푼 개념"], ["at", "푼 시각"]] };
+  begin();
+</script>
+<!-- ===== 🔐 관리자 대시보드 (처음 비밀번호 1234 · 대시보드에서 바꿀 수 있어요) =====
+     지금은 이 기기에 저장된 기록만 보여요. 4단계에서 파이어스토어를 연결하면 모든 학생 기록이 모여요. -->
+<style>
+  .adm-btn{position:fixed;top:12px;right:12px;z-index:50;font:inherit;font-size:14px;color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:999px;padding:5px 14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .adm-btn:hover{border-color:var(--main)}
+  .adm{position:fixed;inset:0;z-index:60;background:rgba(40,30,30,.35);display:flex;align-items:flex-start;justify-content:center;padding:40px 12px;overflow:auto}
+  .adm[hidden]{display:none}
+  .adm-in{background:#fff;color:var(--ink);border-radius:22px;width:100%;max-width:900px;padding:20px 22px;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+  .adm-h{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .adm-h h2{margin:0;font-size:22px;flex:1}
+  .adm-b{white-space:nowrap;font:inherit;font-size:14px;color:var(--ink);border:2px solid var(--line);background:#fff;border-radius:999px;padding:5px 14px;cursor:pointer}
+  .adm-b.main{background:var(--main);border-color:var(--main);color:#fff}
+  .adm-b.warn:hover{border-color:#D9534F;color:#D9534F}
+  .adm-in input{font:inherit;font-size:16px;border:2px solid var(--line);border-radius:12px;padding:8px 12px;width:auto;flex:1 1 150px;min-width:0}
+  .adm-in input:focus{outline:none;border-color:var(--main)}
+  .adm-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+  .adm-err{color:#D9534F;font-size:14px;min-height:20px;margin:6px 0 0}
+  .adm-ok{color:#3FAE6F}
+  .adm-stat{display:inline-block;background:color-mix(in srgb,var(--main) 12%,#fff);border-radius:14px;padding:6px 14px;margin-right:6px}
+  .adm-stat b{font-size:20px}
+  .adm-wrap{overflow-x:auto;border:2px solid var(--line);border-radius:14px;margin:12px 0}
+  .adm-in table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+  .adm-in th,.adm-in td{border-bottom:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top;word-break:keep-all;overflow-wrap:anywhere}
+  .adm-in th{background:color-mix(in srgb,var(--main) 8%,#fff);white-space:nowrap}
+  .adm-in tr:last-child td{border-bottom:0}
+  .adm-del{white-space:nowrap;font:inherit;font-size:12px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:1px 8px;cursor:pointer}
+  .adm-pw{background:color-mix(in srgb,var(--main) 6%,#fff);border-radius:14px;padding:10px 14px;margin-top:14px}
+  .adm-pw h3{margin:0 0 4px;font-size:16px}
+  @media print{.adm-btn,.adm{display:none !important}}
+</style>
+<button class="adm-btn" id="admBtn" type="button">🔐 관리자</button>
+<div class="adm" id="adm" hidden><div class="adm-in" id="admIn" role="dialog" aria-label="관리자 대시보드"></div></div>
+<script>
+(() => {
+  // ADMIN = { key: 기록이 저장된 이름, title: 제목, cols: [[칸 이름, 보이는 이름], …], onChange: 기록을 지운 뒤 할 일 }
+  const PW_KEY = "admin.pw." + DATA.code, DEFAULT_PW = "1234";
+  const $a = id => document.getElementById(id);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const getPw = () => { try { return localStorage.getItem(PW_KEY) || DEFAULT_PW; } catch (e) { return DEFAULT_PW; } };
+  const rows = () => { try { return JSON.parse(localStorage.getItem(ADMIN.key) || "[]"); } catch (e) { return []; } };
+  const save = list => { try { localStorage.setItem(ADMIN.key, JSON.stringify(list)); } catch (e) {} ADMIN.onChange && ADMIN.onChange(); };
+  const cell = (r, k) => k === "at" ? (r.at ? new Date(r.at).toLocaleString("ko-KR") : "") : Array.isArray(r[k]) ? r[k].join(", ") : (r[k] ?? "");
+  let open = false;
+
+  function show(html) { $a("admIn").innerHTML = html; $a("adm").hidden = false; open = true; }
+  function close() { $a("adm").hidden = true; open = false; }
+  const head = t => `<div class="adm-h"><h2>${t}</h2><button class="adm-b" id="admX" type="button">✕ 닫기</button></div>`;
+
+  function login() {
+    show(head("🔐 관리자 로그인") + `
+      <p style="margin:0 0 6px">관리자 비밀번호를 넣어 주세요.</p>
+      <div class="adm-row"><input type="password" id="admPw" placeholder="비밀번호" autocomplete="off"><button class="adm-b main" id="admGo" type="button">들어가기</button></div>
+      <p class="adm-err" id="admErr"></p>`);
+    $a("admPw").focus();
+    const go = () => $a("admPw").value === getPw() ? dash() : ($a("admErr").textContent = "비밀번호가 맞지 않아요.");
+    $a("admGo").onclick = go;
+    $a("admPw").onkeydown = e => { if (e.key === "Enter") go(); };
+  }
+
+  function dash() {
+    const list = rows(), view = list.map((r, i) => ({ r, i })).reverse();
+    show(head("📊 관리자 대시보드 · " + esc(ADMIN.title)) + `
+      <div><span class="adm-stat">기록 <b>${list.length}</b>개</span><span style="font-size:13px;opacity:.65">지금은 이 기기에 저장된 기록만 보여요</span></div>
+      ${list.length ? `<div class="adm-wrap"><table><thead><tr><th>#</th>${ADMIN.cols.map(c => `<th>${esc(c[1])}</th>`).join("")}<th></th></tr></thead><tbody>
+        ${view.map((v, n) => `<tr><td>${list.length - n}</td>${ADMIN.cols.map(c => `<td>${esc(cell(v.r, c[0]))}</td>`).join("")}<td><button class="adm-del" data-i="${v.i}" type="button">지우기</button></td></tr>`).join("")}
+      </tbody></table></div>` : `<p style="opacity:.6;margin:14px 0">아직 기록이 없어요.</p>`}
+      <div class="adm-row">
+        <button class="adm-b main" id="admCsv" type="button" ${list.length ? "" : "disabled"}>⬇️ 엑셀(CSV)로 받기</button>
+        <button class="adm-b warn" id="admClear" type="button" ${list.length ? "" : "disabled"}>🗑 모두 지우기</button>
+        <button class="adm-b" id="admLock" type="button">🔒 잠그기</button>
+      </div>
+      <div class="adm-pw"><h3>🔑 비밀번호 바꾸기</h3>
+        <div class="adm-row"><input type="password" id="admOld" placeholder="지금 비밀번호" autocomplete="off"><input type="password" id="admNew" placeholder="새 비밀번호 (4자 이상)" autocomplete="off"><input type="password" id="admNew2" placeholder="새 비밀번호 한 번 더" autocomplete="off"><button class="adm-b main" id="admChange" type="button">바꾸기</button></div>
+        <p class="adm-err" id="admPwMsg"></p></div>`);
+    $a("admLock").onclick = close;
+    $a("admIn").querySelectorAll(".adm-del").forEach(b => b.onclick = () => {
+      if (!confirm("이 기록을 지울까요?")) return;
+      const l = rows(); l.splice(+b.dataset.i, 1); save(l); dash();
+    });
+    $a("admClear").onclick = () => { if (confirm("기록을 모두 지울까요? 되돌릴 수 없어요.")) { save([]); dash(); } };
+    $a("admCsv").onclick = () => {
+      const q = v => `"${String(v).replace(/"/g, '""')}"`;
+      const csv = [ADMIN.cols.map(c => q(c[1])).join(",")].concat(rows().map(r => ADMIN.cols.map(c => q(cell(r, c[0]))).join(","))).join("\r\n");
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" }));
+      a.download = `${ADMIN.title}_${DATA.code}.csv`; document.body.appendChild(a); a.click(); a.remove();
+    };
+    $a("admChange").onclick = () => {
+      const m = $a("admPwMsg"), o = $a("admOld").value, n = $a("admNew").value, n2 = $a("admNew2").value;
+      m.className = "adm-err";
+      if (o !== getPw()) return m.textContent = "지금 비밀번호가 맞지 않아요.";
+      if (n.length < 4) return m.textContent = "새 비밀번호는 4자 이상으로 해 주세요.";
+      if (n !== n2) return m.textContent = "새 비밀번호 두 칸이 서로 달라요.";
+      try { localStorage.setItem(PW_KEY, n); } catch (e) {}
+      m.className = "adm-err adm-ok"; m.textContent = "✓ 비밀번호를 바꿨어요. 다음부터 새 비밀번호로 들어와요.";
+      ["admOld", "admNew", "admNew2"].forEach(k => $a(k).value = "");
+    };
+  }
+
+  $a("admBtn").onclick = login;
+  $a("adm").onclick = e => { if (e.target.id === "adm" || e.target.id === "admX") close(); };
+  document.addEventListener("keydown", e => { if (open && e.key === "Escape") close(); });
+})();
+</script>
+</body>
+</html>
